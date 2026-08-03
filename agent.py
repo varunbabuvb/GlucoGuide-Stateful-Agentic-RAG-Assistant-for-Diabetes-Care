@@ -8,6 +8,7 @@ from system_prompt import system_prompt
 from Tools.bmi_tool import calculate_bmi 
 from Tools.blood_sugar_tool import blood_suagr_level 
 from Tools.rag_tool import rag_tool
+from langgraph.checkpoint.memory import InMemorySaver 
 
 load_dotenv() 
 
@@ -29,7 +30,8 @@ class Agent :
         graph.add_conditional_edges('llm',self.exists_action,
                                     {True:'take_action',False : END})
         graph.add_edge('take_action','llm')
-        self.graph = graph.compile()
+        checkpointer = InMemorySaver()
+        self.graph = graph.compile(checkpointer = checkpointer)
     def call_llm(self,state : AgentState)->dict:
         messages = state['messages']
         if self.system_prompt :
@@ -57,18 +59,21 @@ class Agent :
     
     
     
-prompt = input('Hi ! How may i help you today ? ')
+
 tools = [calculate_bmi,blood_suagr_level,rag_tool]
 agent = Agent(llm = llm ,system_prompt = system_prompt,tools = tools)
-messages = [HumanMessage(content = prompt)]
-result = agent.graph.invoke({'messages':messages})
-content = result["messages"][-1].content
-
-if isinstance(content, str):
-    print()
-    print(content)
-elif isinstance(content, list):
-    for block in content:
-        if block.get("type") == "text":
-            print()
-            print(block["text"])
+user_message = input('hello how may i help you ? ')
+while(user_message.lower() != 'exit'):
+    result = agent.graph.invoke({'messages':[HumanMessage(content = user_message)]},config = {'configurable':{'thread_id': '1'}})
+    content = result['messages'][-1].content
+    if isinstance(content, str):
+        response = content
+    else:
+        response = "".join(
+            block["text"]
+            for block in content
+            if block.get("type") == "text"
+        )
+    print(response)
+    user_message = input('Add a follow on question : ')
+print(list(agent.graph.get_state_history(config = {'configurable':{'thread_id': '1'}})))

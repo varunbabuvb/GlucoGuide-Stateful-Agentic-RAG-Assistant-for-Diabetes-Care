@@ -2,8 +2,6 @@
 
 A secure AI-powered **Diabetes Care Assistant** built using **LangGraph**, **Google Gemini 2.5 Flash**, **FAISS**, and **Retrieval-Augmented Generation (RAG)**.
 
-This project was developed as the Capstone Project for the **DevLabs Agentic AI Mentorship Program**.
-
 The assistant is designed **exclusively for diabetes-related assistance**. It can calculate Body Mass Index (BMI), interpret blood sugar readings, and answer diabetes-related questions using a local knowledge base powered by Retrieval-Augmented Generation (RAG).
 
 To ensure safe and secure operation, the assistant incorporates prompt injection resistance, input validation using Pydantic, and strict domain restrictions.
@@ -13,6 +11,7 @@ To ensure safe and secure operation, the assistant incorporates prompt injection
 # Features
 
 -  LangGraph-based AI Agent
+-  In Memory Saver
 -  Google Gemini 2.5 Flash as the LLM
 -  Three domain-specific tools
 -  Retrieval-Augmented Generation (RAG)
@@ -41,6 +40,7 @@ This ensures that the assistant always operates within its intended domain.
 # Key Capabilities
 
 - Supports multiple tool calls within a single user query.
+- Stores the chat history 
 - Uses Retrieval-Augmented Generation (RAG) for factual diabetes questions.
 - Validates every tool input using Pydantic before execution.
 - Prevents prompt injection attempts from revealing confidential information.
@@ -274,13 +274,18 @@ The assistant refuses prompt injection attempts and responds only to diabetes-re
 ![Security Demo](images/security_demo.png)
 
 ---
+## 4. Conversation Memory 
+
+The assistant remembers the previously asked queries also
+
+![Security Demo](images/memory_demo.png)
+---
 
 
 # Future Improvements
 
 Possible future enhancements include:
 
-- Conversation memory
 - Blood sugar trend analysis
 - Meal recommendation tool
 - Diabetes risk prediction
